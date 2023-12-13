@@ -157,6 +157,17 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
             }
             return
         }
+
+        if (MiraiOpenAiTokensData.balance(event.sender) < 1000) {
+            launch {
+                event.subject.sendMessage(buildMessageChain {
+                    appendLine("你的 Tokens 不足1000")
+                    append(At(event.sender))
+                })
+            }
+            return
+        }
+
         val prompt = event.message.contentToString()
             .removePrefix(MiraiOpenAiConfig.image)
 
@@ -176,6 +187,9 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
                 add(image)
             }
         })
+        launch {
+            MiraiOpenAiTokensData.minusAssign(event.sender, 1000)
+        }
     }
 
     private suspend fun chat(event: MessageEvent) {

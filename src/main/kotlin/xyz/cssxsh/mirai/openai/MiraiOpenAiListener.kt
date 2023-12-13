@@ -458,7 +458,7 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
                 }
                 group.sendMessage(buildMessageChain {
                     appendLine("你们拥有了 $quantity OpenAiTokens")
-                    append(AtAll)
+                    //append(AtAll)
                 })
             }
         }

@@ -105,6 +105,8 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
             content.startsWith(MiraiOpenAiConfig.question)
                 && (MiraiOpenAiConfig.permission.not() || toCommandSender().hasPermission(question))
             -> question(event = this)
+            content.startsWith(MiraiOpenAiConfig.economy_balance)
+            -> economyBalance(event = this)
             content.startsWith(MiraiOpenAiConfig.reload)
                 && (MiraiOpenAiConfig.permission.not() || toCommandSender().hasPermission(reload))
             -> with(MiraiOpenAiPlugin) {
@@ -192,6 +194,19 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
         }
     }
 
+    private suspend fun economyBalance(event: MessageEvent){
+        if (MiraiOpenAiConfig.economy.not()){
+            launch {
+                event.subject.sendMessage("当前并没有启用经济系统".toPlainText())
+            }
+            return
+        }
+        val balance = MiraiOpenAiTokensData.balance(event.sender)
+        launch {
+            event.subject.sendMessage("你当前拥有 $balance OpenAiTokens".toPlainText())
+        }
+        return
+    }
     private suspend fun chat(event: MessageEvent) {
         if (lock.size >= MiraiOpenAiConfig.limit) {
             launch {
@@ -457,7 +472,7 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
                     MiraiOpenAiTokensData.plusAssign(member, quantity.toInt())
                 }
                 group.sendMessage(buildMessageChain {
-                    appendLine("你们拥有了 $quantity OpenAiTokens")
+                    appendLine("你们集体增加了 $quantity OpenAiTokens")
                     //append(AtAll)
                 })
             }
@@ -470,12 +485,13 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
         val member = user as? NormalMember ?: return
         if (MiraiOpenAiConfig.permission && member.permitteeId.hasPermission(chat).not()) return
         MiraiOpenAiTokensData.plusAssign(member, EconomyConfig.sign)
-        launch {
-            member.group.sendMessage(buildMessageChain {
-                appendLine("你获得了 ${EconomyConfig.sign} OpenAiTokens")
-                append(At(user))
-            })
-        }
+//        val balance = MiraiOpenAiTokensData.balance(member)
+//        launch {
+//            member.group.sendMessage(buildMessageChain {
+//                appendLine("你获得了 ${EconomyConfig.sign} Tokens，现在还有$balance")
+//                append(At(user))
+//            })
+//        }
     }
 
     @EventHandler

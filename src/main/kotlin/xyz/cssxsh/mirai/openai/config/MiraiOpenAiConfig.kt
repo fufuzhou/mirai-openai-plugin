@@ -106,6 +106,10 @@ internal object MiraiOpenAiConfig : ReadOnlyPluginConfig(saveName = "openai"), O
     @ValueDescription("接入经济系统")
     val economy: Boolean by value(true)
 
+    @ValueName("economy_balance_prefix")
+    @ValueDescription("查询经济系统中的余额")
+    val economy_balance: String by value("查询Token余额")
+
     @ValueName("show_exception")
     @ValueDescription("出现API异常时回复异常信息")
     val exception: Boolean by value(true)

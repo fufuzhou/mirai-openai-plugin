@@ -483,7 +483,7 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
     fun SignEvent.economy() {
         if (MiraiOpenAiTokensData.economy.not()) return
         val member = user as? NormalMember ?: return
-        if (MiraiOpenAiConfig.permission && member.permitteeId.hasPermission(chat).not()) return
+        if (MiraiOpenAiConfig.permission && member.permitteeId.hasPermission(completion).not()) return
         MiraiOpenAiTokensData.plusAssign(member, EconomyConfig.sign)
 //        val balance = MiraiOpenAiTokensData.balance(member)
 //        launch {

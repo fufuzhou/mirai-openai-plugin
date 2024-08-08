@@ -15,5 +15,7 @@ public data class ChoiceMessage(
     @SerialName("name")
     val name: String? = null,
     @SerialName("function_call")
-    val call: Map<String, String>? = null
+    val call: Map<String, String>? = null,
+    @SerialName("refusal")
+    val refusal: String? = null
 )

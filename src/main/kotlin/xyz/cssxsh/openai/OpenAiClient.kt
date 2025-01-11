@@ -8,6 +8,7 @@ import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.compression.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.*
 import io.ktor.serialization.kotlinx.json.*
@@ -25,8 +26,14 @@ import xyz.cssxsh.openai.moderation.*
 
 public open class OpenAiClient(internal val config: OpenAiClientConfig) {
     public open val http: HttpClient = HttpClient(OkHttp) {
+//        install(ContentNegotiation) {
+//            json(json = Json)
+//        }
         install(ContentNegotiation) {
-            json(json = Json)
+            json(Json {
+                ignoreUnknownKeys = true // 忽略未知字段
+                isLenient = true // 宽松模式
+            })
         }
         install(HttpTimeout) {
             socketTimeoutMillis = config.timeout
@@ -41,8 +48,11 @@ public open class OpenAiClient(internal val config: OpenAiClientConfig) {
                 refreshTokens {
                     BearerTokens(config.token, "")
                 }
+//                sendWithoutRequest { builder ->
+//                    builder.url.host == "api.openai.com"
+//                }
                 sendWithoutRequest { builder ->
-                    builder.url.host == "api.openai.com"
+                    builder.url.host == "api.deepseek.com"
                 }
             }
         }
@@ -83,6 +93,7 @@ public open class OpenAiClient(internal val config: OpenAiClientConfig) {
                 apply(config = config)
             }
         }
+
     }
     public open val model: ModelController by lazy { ModelController(this) }
     public open val completion: CompletionController by lazy { CompletionController(this) }

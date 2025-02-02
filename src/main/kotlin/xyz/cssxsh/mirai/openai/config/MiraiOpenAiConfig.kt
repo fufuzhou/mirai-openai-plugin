@@ -26,6 +26,18 @@ internal object MiraiOpenAiConfig : ReadOnlyPluginConfig(saveName = "openai"), O
     @ValueDescription("OPENAI_TOKEN https://platform.openai.com/account/api-keys")
     override val token: String by value(System.getenv("OPENAI_TOKEN").orEmpty())
 
+    @ValueName("imagetoken")
+    @ValueDescription("TOKEN for image api if image use a different base url")
+    override val imagetoken: String by value(System.getenv("OPENAI_TOKEN").orEmpty().ifEmpty { token })
+
+    @ValueName("baseurl")
+    @ValueDescription("API BASE URL")
+    override val baseurl: String by value("https://api.openai.com/v1");
+
+    @ValueName("imagebaseurl")
+    @ValueDescription("IMAGE API BASE URL")
+    val imagebaseurl:String by value("https://api.openai.com/v1");
+
     @ValueName("error_reply")
     @ValueDescription("发生错误时回复用户")
     val reply: Boolean by value(true)

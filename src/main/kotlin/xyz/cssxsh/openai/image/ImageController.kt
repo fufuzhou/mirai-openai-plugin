@@ -5,6 +5,8 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import xyz.cssxsh.openai.*
+import xyz.cssxsh.openai.chat.ChatInfo
+import xyz.cssxsh.openai.chat.ChatRequest
 
 /**
  * [Images](https://platform.openai.com/docs/api-reference/images)
@@ -23,11 +25,40 @@ public class ImageController(private val client: OpenAiClient) {
         return response.body()
     }
 
+    public suspend fun create(
+        request: ImageRequest,
+        apiBaseUrl: String = "https://api.openai.com/v1"
+    ): ImageInfo {
+        val url = "$apiBaseUrl/images/generations"
+        val response = if (apiBaseUrl == "https://api.openai.com/v1") {
+            client.http.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        } else {
+            client.http2.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+        }
+        return response.body()
+    }
+
+
     /**
      * [Create image](https://platform.openai.com/docs/api-reference/images/create)
      */
     public suspend fun create(prompt: String, block: ImageRequest.Builder.() -> Unit): ImageInfo {
         return create(request = ImageRequest.Builder(prompt = prompt).apply(block).build())
+    }
+
+    public suspend fun create(
+        prompt: String,
+        apiBaseUrl: String,
+        block: ImageRequest.Builder.() -> Unit
+    ): ImageInfo {
+        val request = ImageRequest.Builder(prompt = prompt).apply(block).build()
+        return create(request = request, apiBaseUrl = apiBaseUrl)
     }
 
     /**

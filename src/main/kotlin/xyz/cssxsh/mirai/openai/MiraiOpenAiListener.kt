@@ -175,20 +175,30 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
 
         logger.verbose { "prompt: $prompt" }
 
-        val result = client.image.create(prompt = prompt) {
+        val result = client.image.create(prompt = prompt, apiBaseUrl = MiraiOpenAiConfig.imagebaseurl) {
             user(event.senderName)
             ImageConfig.push(this)
         }
 
         event.subject.sendMessage(buildMessageChain {
             add(event.message.quote())
-            for (item in result.data) {
-                val file = store(item = item, folder = folder)
-                val image = event.subject.uploadImage(file)
-
-                add(image)
+            if (result.data.isEmpty()) {
+                // 如果 result.data 为空，则使用 result.images
+                for (item in result.images) {
+                    val file = store(item = item, folder = folder)
+                    val image = event.subject.uploadImage(file)
+                    add(image)
+                }
+            } else {
+                // 否则还是使用 result.data
+                for (item in result.data) {
+                    val file = store(item = item, folder = folder)
+                    val image = event.subject.uploadImage(file)
+                    add(image)
+                }
             }
         })
+
         launch {
             MiraiOpenAiTokensData.minusAssign(event.sender, 1000)
         }
@@ -288,7 +298,7 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
     }
 
     private suspend fun send(event: MessageEvent, buffer: MutableList<ChoiceMessage>): String {
-        val chat = client.chat.create(model = "gpt-3.5-turbo") {
+        val chat = client.chat.create(model = "gpt-3.5-turbo", apiBaseUrl = MiraiOpenAiConfig.baseurl) {
             messages(buffer)
             user(event.senderName)
             ChatConfig.push(this)

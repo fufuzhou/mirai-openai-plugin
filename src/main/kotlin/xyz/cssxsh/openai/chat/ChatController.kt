@@ -31,4 +31,26 @@ public class ChatController(private val client: OpenAiClient) {
     public suspend fun create(model: String, block: ChatRequest.Builder.() -> Unit): ChatInfo {
         return create(request = ChatRequest.Builder(model = model).apply(block).build())
     }
+
+    public suspend fun create(
+        request: ChatRequest,
+        apiBaseUrl: String = "https://api.openai.com/v1"
+    ): ChatInfo {
+        val url = "$apiBaseUrl/chat/completions"
+        val response = client.http.post(url) {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+        return response.body()
+    }
+
+    public suspend fun create(
+        model: String,
+        apiBaseUrl: String,
+        block: ChatRequest.Builder.() -> Unit
+    ): ChatInfo {
+        val request = ChatRequest.Builder(model = model).apply(block).build()
+        return create(request = request, apiBaseUrl = apiBaseUrl)
+    }
+
 }

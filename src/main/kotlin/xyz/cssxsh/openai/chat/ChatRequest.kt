@@ -47,6 +47,8 @@ public data class ChatRequest(
     val stop: List<String>? = null,
     @SerialName("max_tokens")
     val maxTokens: Int = 4096,
+    @SerialName("max_completion_tokens")
+    val max_completion_tokens: Int = 4096,
     @SerialName("presence_penalty")
     val presencePenalty: Double = 0.0,
     @SerialName("frequency_penalty")
@@ -280,6 +282,7 @@ public data class ChatRequest(
                 stream = stream,
                 stop = stop.ifEmpty { null },
                 maxTokens = maxTokens,
+                max_completion_tokens = maxTokens,
                 presencePenalty = presencePenalty,
                 frequencyPenalty = frequencyPenalty,
                 logitBias = logitBias.ifEmpty { null },

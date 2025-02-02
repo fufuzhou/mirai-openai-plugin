@@ -101,8 +101,8 @@ public data class ImageRequest(
                 "dall-e-3" -> require(size in listOf(ImageSize.LARGE, ImageSize.LARGE_WIDTH, ImageSize.LARGE_HEIGHT)) {
                     "dall-e-3 model requires one of the sizes: LARGE (1024x1024), LARGE_WIDTH (1792x1024), or LARGE_HEIGHT (1024x1792)"
                 }
-
-                else -> throw IllegalArgumentException("Unsupported model: $model")
+                else -> {}
+                //else -> throw IllegalArgumentException("Unsupported model: $model")
             }
         }
 

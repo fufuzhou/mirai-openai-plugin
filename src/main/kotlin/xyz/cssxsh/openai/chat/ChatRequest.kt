@@ -34,9 +34,9 @@ public data class ChatRequest(
     @SerialName("tool_choice")
     val choice: JsonElement = JsonNull,
     @SerialName("temperature")
-    val temperature: Double = 1.0,
+    val temperature: Double? = 1.0,
     @SerialName("top_p")
-    val topP: Double = 1.0,
+    val topP: Double? = 1.0,
     @SerialName("n")
     val number: Int = 1,
     @SerialName("seed")
@@ -46,13 +46,13 @@ public data class ChatRequest(
     @SerialName("stop")
     val stop: List<String>? = null,
     @SerialName("max_tokens")
-    val maxTokens: Int = 4096,
+    val maxTokens: Int? = 4096,
     @SerialName("max_completion_tokens")
     val max_completion_tokens: Int = 4096,
     @SerialName("presence_penalty")
-    val presencePenalty: Double = 0.0,
+    val presencePenalty: Double? = 0.0,
     @SerialName("frequency_penalty")
-    val frequencyPenalty: Double = 0.0,
+    val frequencyPenalty: Double? = 0.0,
     @SerialName("logit_bias")
     val logitBias: Map<String, Int>? = null,
     @SerialName("user")
@@ -271,25 +271,50 @@ public data class ChatRequest(
 
         public fun build(): ChatRequest {
             check(messages.isEmpty().not()) { "Required messages" }
-            return ChatRequest(
-                model = model,
-                messages = messages,
-                functions = functions.ifEmpty { null },
-                call = call ?: JsonNull,
-                temperature = temperature,
-                topP = topP,
-                number = number,
-                stream = stream,
-                stop = stop.ifEmpty { null },
-                maxTokens = maxTokens,
-                max_completion_tokens = maxTokens,
-                presencePenalty = presencePenalty,
-                frequencyPenalty = frequencyPenalty,
-                logitBias = logitBias.ifEmpty { null },
-                user = user,
-                tools = tools.ifEmpty { null },
-                choice = choice,
-            )
+            // 根据 model 是否包含 "o1" 或 "o3" 决定是否将 maxTokens 置为 null
+            val effectiveMaxTokens = if (model.contains("o1") || model.contains("o3")) null else maxTokens
+            if (model.contains("o1") || model.contains("o3")){
+                return ChatRequest(
+                    model = model,
+                    messages = messages,
+                    functions = functions.ifEmpty { null },
+                    call = call ?: JsonNull,
+                    temperature = null,
+                    topP = null,
+                    number = number,
+                    stream = stream,
+                    stop = stop.ifEmpty { null },
+                    maxTokens = null,
+                    max_completion_tokens = maxTokens,
+                    presencePenalty = null,
+                    frequencyPenalty = null,
+                    logitBias = logitBias.ifEmpty { null },
+                    user = user,
+                    tools = tools.ifEmpty { null },
+                    choice = choice,
+                )
+            } else {
+                return ChatRequest(
+                    model = model,
+                    messages = messages,
+                    functions = functions.ifEmpty { null },
+                    call = call ?: JsonNull,
+                    temperature = temperature,
+                    topP = topP,
+                    number = number,
+                    stream = stream,
+                    stop = stop.ifEmpty { null },
+                    maxTokens = maxTokens,
+                    max_completion_tokens = maxTokens,
+                    presencePenalty = presencePenalty,
+                    frequencyPenalty = frequencyPenalty,
+                    logitBias = logitBias.ifEmpty { null },
+                    user = user,
+                    tools = tools.ifEmpty { null },
+                    choice = choice,
+                )
+            }
+
         }
     }
 }

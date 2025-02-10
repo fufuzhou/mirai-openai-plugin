@@ -253,9 +253,12 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
         }
         lock[event.sender.id] = event
         val buffer = mutableListOf(ChoiceMessage(role = "system", content = system))
-        val message = send(event = event, buffer = buffer)
+//        val message = send(event = event, buffer = buffer)
+//        launch {
+//            event.subject.sendMessage(event.message.quote() + message)
+//        }
         launch {
-            event.subject.sendMessage(event.message.quote() + message)
+            event.subject.sendMessage("开始聊天")
         }
         launch {
             while (isActive) {

@@ -30,17 +30,21 @@ public class ImageController(private val client: OpenAiClient) {
         apiBaseUrl: String = "https://api.openai.com/v1"
     ): ImageInfo {
         val url = "$apiBaseUrl/images/generations"
-        val response = if (apiBaseUrl == "https://api.openai.com/v1") {
-            client.http.post(url) {
-                contentType(ContentType.Application.Json)
-                setBody(request)
-            }
-        } else {
-            client.http2.post(url) {
-                contentType(ContentType.Application.Json)
-                setBody(request)
-            }
+        val response  = client.http2.post(url) {
+            contentType(ContentType.Application.Json)
+            setBody(request)
         }
+//        val response = if (apiBaseUrl == "https://api.openai.com/v1") {
+//            client.http.post(url) {
+//                contentType(ContentType.Application.Json)
+//                setBody(request)
+//            }
+//        } else {
+//            client.http2.post(url) {
+//                contentType(ContentType.Application.Json)
+//                setBody(request)
+//            }
+//        }
         return response.body()
     }
 

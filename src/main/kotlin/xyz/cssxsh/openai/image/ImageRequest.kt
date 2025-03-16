@@ -30,7 +30,13 @@ public data class ImageRequest(
     @SerialName("style")
     val style: String? = "vivid",
     @SerialName("user")
-    val user: String = ""
+    val user: String = "",
+    @SerialName("batch_size")
+    val batch_size: Int = 1,
+    @SerialName("num_inference_steps")
+    val num_inference_steps: Int = 50,
+    @SerialName("guidance_scale")
+    val guidance_scale: Double = 7.5
 ) {
     public class Builder(@property:OpenAiDsl public var prompt: String) {
         @OpenAiDsl
@@ -78,6 +84,25 @@ public data class ImageRequest(
             model = value
         }
 
+        @OpenAiDsl
+        public var batch_size: Int = 1
+        @OpenAiDsl
+        public fun batch_size(value: Int): Builder = apply {
+            batch_size = value
+        }
+        @OpenAiDsl
+        public var num_inference_steps: Int = 50
+        @OpenAiDsl
+        public fun num_inference_steps(value: Int): Builder = apply {
+            num_inference_steps = value
+        }
+        @OpenAiDsl
+        public var guidance_scale: Double = 7.5
+        @OpenAiDsl
+        public fun guidance_scale(value: Double): Builder = apply {
+            guidance_scale = value
+        }
+
         public fun build(): ImageRequest {
             require(number in 1..10) { "Must be between 1 and 10" }
             // 这里添加对模型和尺寸的检查
@@ -89,6 +114,9 @@ public data class ImageRequest(
                 format = format,
                 user = user,
                 model = model,
+                batch_size = number,
+                num_inference_steps = num_inference_steps,
+                guidance_scale = 7.5
             )
         }
 

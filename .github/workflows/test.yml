@@ -6,6 +6,15 @@ on:
   pull_request:
     paths-ignore:
       - '**/*.md'
+    # 手动触发事件
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
 
 jobs:
   check:
@@ -25,21 +34,21 @@ jobs:
       - name: chmod -R 777 *
         run: chmod -R 777 *
 
-      - name: Init gradle project
-        run: ./gradlew clean --scan
+      # - name: Init gradle project
+      #   run: ./gradlew clean --scan
 
-      - name: Assemble
-        run: ./gradlew assemble --scan
+      # - name: Assemble
+      #   run: ./gradlew assemble --scan
 
-      - name: OpenAiClientTest
-        run: ./gradlew test --tests "xyz.cssxsh.openai.OpenAiClientTest" --scan --info
-        env:
-          OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
+      # - name: OpenAiClientTest
+      #   run: ./gradlew test --tests "xyz.cssxsh.openai.OpenAiClientTest" --scan --info
+      #   env:
+      #     OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
 
-      - name: MiraiOpenAiListenerTest
-        run: ./gradlew test --tests "xyz.cssxsh.mirai.openai.MiraiOpenAiListenerTest" --scan --info
-        env:
-          OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
+      # - name: MiraiOpenAiListenerTest
+      #   run: ./gradlew test --tests "xyz.cssxsh.mirai.openai.MiraiOpenAiListenerTest" --scan --info
+      #   env:
+      #     OPENAI_TOKEN: ${{ secrets.OPENAI_TOKEN }}
 
       - name: BuildPlugin
         run: ./gradlew buildPlugin

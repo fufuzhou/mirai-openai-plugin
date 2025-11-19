@@ -8,9 +8,12 @@ import kotlinx.serialization.encoding.*
 public enum class ImageSize(public val text: String) {
     LARGE_WIDTH("1792x1024"),
     LARGE_HEIGHT("1024x1792"),
+    ExLARGE("2048x2048"),
     LARGE("1024x1024"),
     MIDDLE("512x512"),
-    SMALL("256x256");
+    SMALL("256x256"),
+    I2K("2K"),
+    I4K("4K");
 
     internal companion object Serializer : KSerializer<ImageSize> {
         override val descriptor: SerialDescriptor =

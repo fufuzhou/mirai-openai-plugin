@@ -36,7 +36,9 @@ public data class ImageRequest(
     @SerialName("num_inference_steps")
     val num_inference_steps: Int = 50,
     @SerialName("guidance_scale")
-    val guidance_scale: Double = 7.5
+    val guidance_scale: Double = 7.5,
+    @SerialName("image")
+    val image: String? = null
 ) {
     public class Builder(@property:OpenAiDsl public var prompt: String) {
         @OpenAiDsl
@@ -102,6 +104,12 @@ public data class ImageRequest(
         public fun guidance_scale(value: Double): Builder = apply {
             guidance_scale = value
         }
+        @OpenAiDsl
+        public var image: String? = null
+        @OpenAiDsl
+        public fun image(value: String?): Builder = apply {
+            image = value
+        }
 
         public fun build(): ImageRequest {
             require(number in 1..10) { "Must be between 1 and 10" }
@@ -116,7 +124,8 @@ public data class ImageRequest(
                 model = model,
                 batch_size = number,
                 num_inference_steps = num_inference_steps,
-                guidance_scale = 7.5
+                guidance_scale = 7.5,
+                image = image
             )
         }
 

@@ -18,6 +18,9 @@ import net.mamoe.mirai.event.*
 import net.mamoe.mirai.event.events.*
 import net.mamoe.mirai.message.*
 import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
+import net.mamoe.mirai.message.data.QuoteReply
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.utils.*
 import xyz.cssxsh.mirai.openai.config.*
@@ -175,9 +178,14 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
 
         logger.verbose { "prompt: $prompt" }
 
+        val imageUrl = event.message.firstImageUrl()
+
         val result = client.image.create(prompt = prompt, apiBaseUrl = MiraiOpenAiConfig.imagebaseurl) {
             user(event.senderName)
             ImageConfig.push(this)
+            if (imageUrl != null) {
+                image(imageUrl)
+            }
         }
 
         event.subject.sendMessage(buildMessageChain {
@@ -202,6 +210,12 @@ internal object MiraiOpenAiListener : SimpleListenerHost() {
         launch {
             MiraiOpenAiTokensData.minusAssign(event.sender, 1000)
         }
+    }
+
+    private suspend fun MessageChain.firstImageUrl(): String? {
+        firstIsInstanceOrNull<Image>()?.let { return it.queryUrl() }
+        val quoteReply = firstIsInstanceOrNull<QuoteReply>() ?: return null
+        return quoteReply.source.originalMessage.firstIsInstanceOrNull<Image>()?.queryUrl()
     }
 
     private suspend fun economyBalance(event: MessageEvent){
